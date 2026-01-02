@@ -1,78 +1,355 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Button Chaos</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
   <style>
-    body {
-      margin: 0;
-      font-family: system-ui, Arial, sans-serif;
-      background: #0b1220;
-      color: #e8eefc;
-      min-height: 100vh;
-      display: grid;
-      place-items: center;
+    :root{
+      --bg:#0b1220; --card:#121a2b; --text:#e8eefc; --muted:#a8b3cf;
+      --b:#ffffff1a;
+    }
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
+      background:radial-gradient(1200px 700px at 20% 10%, #1a2a52 0%, var(--bg) 55%);
+      color:var(--text);
+      min-height:100vh;
+      display:grid;
+      place-items:center;
+      padding:24px;
+      overflow-x:hidden;
+    }
+    .wrap{ width:min(900px, 100%); }
+    .card{
+      background:rgba(18,26,43,.92);
+      border:1px solid var(--b);
+      border-radius:22px;
+      padding:22px;
+      box-shadow:0 18px 50px rgba(0,0,0,.45);
+      backdrop-filter: blur(8px);
+    }
+    h1{ margin:0 0 6px; font-size: clamp(28px, 4vw, 44px); letter-spacing:.2px; }
+    p{ margin:0 0 14px; color:var(--muted); line-height:1.4; }
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap:12px;
+      margin-top:14px;
+    }
+    button{
+      border:1px solid var(--b);
+      background:rgba(255,255,255,.06);
+      color:var(--text);
+      padding:14px 14px;
+      border-radius:16px;
+      font-size:15px;
+      cursor:pointer;
+      transition: transform .08s ease, background .2s ease, border-color .2s ease;
+      user-select:none;
+      position:relative;
+      overflow:hidden;
+    }
+    button:hover{ transform: translateY(-1px); background:rgba(255,255,255,.10); border-color:rgba(255,255,255,.22); }
+    button:active{ transform: translateY(1px) scale(.99); }
+
+    .danger{
+      background:rgba(255,77,77,.16);
+      border-color:rgba(255,77,77,.35);
+    }
+    .safe{
+      background:rgba(77,166,255,.14);
+      border-color:rgba(77,166,255,.35);
+    }
+    .hud{
+      display:flex; gap:10px; flex-wrap:wrap; align-items:center;
+      margin-top:14px;
+    }
+    .pill{
+      padding:8px 12px; border-radius:999px;
+      background:rgba(255,255,255,.06);
+      border:1px solid var(--b);
+      color:var(--muted); font-size:13px;
+    }
+    .tiny{
+      margin-top:10px; font-size:12px; color:rgba(168,179,207,.75);
+    }
+    .toast{
+      position:fixed; left:50%; bottom:18px; transform:translateX(-50%);
+      background:rgba(0,0,0,.65); color:#fff;
+      border:1px solid rgba(255,255,255,.12);
+      padding:10px 12px; border-radius:12px;
+      opacity:0; pointer-events:none;
+      transition: opacity .25s ease, transform .25s ease;
+      max-width:min(560px, 92vw);
+      text-align:center;
+      z-index:50;
+    }
+    .toast.show{ opacity:1; transform:translateX(-50%) translateY(-6px); }
+
+    .shake { animation: shake .35s linear; }
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      20% { transform: translateX(-10px); }
+      40% { transform: translateX(10px); }
+      60% { transform: translateX(-8px); }
+      80% { transform: translateX(8px); }
     }
 
-    .box {
-      background: #121a2b;
-      padding: 30px;
-      border-radius: 16px;
-      text-align: center;
-      width: min(500px, 90%);
-      box-shadow: 0 20px 50px rgba(0,0,0,.4);
+    .confetti{
+      position:fixed; font-size:20px; z-index:60;
+      pointer-events:none;
+      animation: fall 900ms ease-out forwards;
     }
-
-    h1 {
-      margin-top: 0;
-    }
-
-    button {
-      padding: 14px 20px;
-      margin: 10px;
-      font-size: 16px;
-      border-radius: 12px;
-      border: none;
-      cursor: pointer;
-    }
-
-    #danger {
-      background: #ff4d4d;
-      color: white;
-    }
-
-    #safe {
-      background: #4da6ff;
-      color: white;
+    @keyframes fall{
+      0%{ transform: translateY(0) scale(1); opacity:1; }
+      100%{ transform: translateY(220px) scale(.7); opacity:0; }
     }
   </style>
 </head>
-
 <body>
-  <div class="box">
-    <h1>Button Chaos 😈</h1>
-    <p>These buttons definitely should not be clicked.</p>
+  <div class="wrap">
+    <div class="card" id="card">
+      <h1>Button Chaos 😈</h1>
+      <p>These buttons definitely should not be clicked.<br/>Anyway… go on then.</p>
 
-    <button id="danger">DO NOT CLICK</button>
-    <button id="safe">This one is safe</button>
+      <div class="grid" id="grid">
+        <button class="danger" id="btnDONT">DO NOT CLICK</button>
+        <button class="safe" id="btnSafe">This one is safe</button>
+        <button id="btnSound">Random sound 🎵</button>
+        <button id="btnVibe">Change the vibe</button>
+        <button id="btnRoast">Roast me</button>
+        <button id="btnTeleport">Teleport buttons</button>
+        <button id="btnReverse">Reverse controls</button>
+        <button id="btnReset">Reset reality</button>
+      </div>
 
-    <p id="msg"></p>
+      <div class="hud">
+        <div class="pill">Clicks: <span id="clicks">0</span></div>
+        <div class="pill">Vibe: <span id="vibe">Chill</span></div>
+        <div class="pill">Controls: <span id="controls">Normal</span></div>
+        <button id="btnMute" style="padding:8px 12px;border-radius:999px;font-size:13px;">Sound: ON</button>
+      </div>
+
+      <div class="tiny">
+        Tip: share the link with a mate and tell them “press the red one first” 😏
+      </div>
+    </div>
   </div>
 
+  <div class="toast" id="toast"></div>
+
   <script>
-    const msg = document.getElementById("msg");
+    const $ = (id) => document.getElementById(id);
+    const toastEl = $("toast");
+    const clicksEl = $("clicks");
+    const vibeEl = $("vibe");
+    const controlsEl = $("controls");
+    const card = $("card");
+    const grid = $("grid");
 
-    document.getElementById("danger").onclick = () => {
-      msg.textContent = "I literally told you not to click it.";
-      document.body.style.background = "#400";
+    let clicks = 0;
+    let reversed = false;
+    let vibeIndex = 0;
+    let soundOn = true;
+
+    const roasts = [
+      "Bold of you to click that like you own the internet.",
+      "You clicked that with confidence… and zero caution.",
+      "Your curiosity is powerful. Your self-control is not.",
+      "This is why warning labels exist.",
+      "You are exactly the reason this site is called Button Chaos.",
+      "You clicked it. I’m not mad. I’m disappointed.",
+      "That button didn’t stand a chance against you, did it?",
+      "If chaos had a fan club, you’d be the president."
+    ];
+
+    const vibes = [
+      { name:"Chill", a:"#1a2a52", b:"#0b1220" },
+      { name:"Spicy", a:"#4b1a1a", b:"#0b1220" },
+      { name:"Cyber", a:"#0b3b3a", b:"#040814" },
+      { name:"Royal", a:"#2a1a52", b:"#070a18" }
+    ];
+
+    function showToast(text){
+      toastEl.textContent = text;
+      toastEl.classList.add("show");
+      clearTimeout(showToast._t);
+      showToast._t = setTimeout(()=>toastEl.classList.remove("show"), 1400);
+    }
+
+    function bumpClicks(){
+      clicks++;
+      clicksEl.textContent = clicks;
+      // escalate vibes a tiny bit
+      if (clicks === 10) showToast("10 clicks… you’re committed to this nonsense.");
+      if (clicks === 20) showToast("20 clicks. Please seek sunlight.");
+    }
+
+    // --- SOUND (no external files; uses WebAudio beeps) ---
+    function beep(type="random"){
+      if (!soundOn) return;
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) { showToast("No audio support on this browser 😭"); return; }
+      const ctx = beep._ctx || (beep._ctx = new AudioCtx());
+
+      // Mobile requires user gesture; these beeps are triggered by a click so it's ok.
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+
+      const picks = [
+        { f: 220, t:"sine" },
+        { f: 330, t:"triangle" },
+        { f: 440, t:"square" },
+        { f: 520, t:"sawtooth" },
+        { f: 660, t:"triangle" },
+        { f: 784, t:"sine" }
+      ];
+      const p = picks[Math.floor(Math.random()*picks.length)];
+      o.frequency.value = p.f;
+      o.type = p.t;
+
+      const now = ctx.currentTime;
+      g.gain.setValueAtTime(0.0001, now);
+      g.gain.exponentialRampToValueAtTime(0.25, now + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, now + 0.18);
+
+      o.connect(g); g.connect(ctx.destination);
+      o.start(now);
+      o.stop(now + 0.20);
+
+      if (navigator.vibrate) navigator.vibrate(30);
+    }
+
+    function confettiBurst(){
+      const emojis = ["✨","🎉","💥","🔥","🧨","😈"];
+      for (let i=0;i<18;i++){
+        const s = document.createElement("div");
+        s.className = "confetti";
+        s.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+        s.style.left = (Math.random()*100) + "vw";
+        s.style.top = (10 + Math.random()*30) + "vh";
+        s.style.transform = `translateY(0) rotate(${Math.random()*60-30}deg)`;
+        document.body.appendChild(s);
+        setTimeout(()=>s.remove(), 900);
+      }
+    }
+
+    function setVibe(){
+      vibeIndex = (vibeIndex + 1) % vibes.length;
+      const v = vibes[vibeIndex];
+      vibeEl.textContent = v.name;
+      document.body.style.background =
+        `radial-gradient(1200px 700px at 20% 10%, ${v.a} 0%, ${v.b} 55%)`;
+      showToast("Vibe changed: " + v.name);
+    }
+
+    function shake(){
+      card.classList.remove("shake");
+      // restart animation
+      void card.offsetWidth;
+      card.classList.add("shake");
+    }
+
+    function teleportButtons(){
+      // shuffle button order
+      const btns = Array.from(grid.querySelectorAll("button"));
+      for (let i = btns.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [btns[i], btns[j]] = [btns[j], btns[i]];
+      }
+      btns.forEach(b => grid.appendChild(b));
+      showToast("Buttons teleported 😵‍💫");
+    }
+
+    function doRoast(){
+      const r = roasts[Math.floor(Math.random()*roasts.length)];
+      showToast(r);
+    }
+
+    function resetReality(){
+      clicks = 0;
+      clicksEl.textContent = "0";
+      reversed = false;
+      controlsEl.textContent = "Normal";
+      vibeIndex = 0;
+      vibeEl.textContent = vibes[0].name;
+      document.body.style.background =
+        `radial-gradient(1200px 700px at 20% 10%, ${vibes[0].a} 0%, ${vibes[0].b} 55%)`;
+      showToast("Reality restored ✅");
+    }
+
+    function runAction(action){
+      // reversed controls flips Safe<->Danger as a prank
+      if (reversed){
+        if (action === "safe") action = "dont";
+        else if (action === "dont") action = "safe";
+      }
+
+      bumpClicks();
+
+      switch(action){
+        case "dont":
+          shake();
+          document.body.style.background =
+            `radial-gradient(1200px 700px at 20% 10%, #4b1a1a 0%, #0b1220 55%)`;
+          showToast("I literally told you not to click it.");
+          if (navigator.vibrate) navigator.vibrate([40,30,40]);
+          break;
+        case "safe":
+          showToast("See? This one was fine.");
+          break;
+        case "sound":
+          beep();
+          showToast("🎵 *unholy beep noises*");
+          break;
+        case "vibe":
+          setVibe();
+          break;
+        case "roast":
+          doRoast();
+          break;
+        case "teleport":
+          teleportButtons();
+          break;
+        case "reverse":
+          reversed = !reversed;
+          controlsEl.textContent = reversed ? "Reversed" : "Normal";
+          showToast(reversed ? "Controls reversed 😈" : "Controls normal again.");
+          break;
+        case "confetti":
+          confettiBurst();
+          showToast("Budget confetti deployed.");
+          break;
+        default:
+          showToast("Nothing happened. Or did it?");
+      }
+    }
+
+    $("btnDONT").onclick = () => runAction("dont");
+    $("btnSafe").onclick = () => runAction("safe");
+    $("btnSound").onclick = () => runAction("sound");
+    $("btnVibe").onclick = () => runAction("vibe");
+    $("btnRoast").onclick = () => runAction("roast");
+    $("btnTeleport").onclick = () => runAction("teleport");
+    $("btnReverse").onclick = () => runAction("reverse");
+    $("btnReset").onclick = () => resetReality();
+
+    $("btnMute").onclick = () => {
+      soundOn = !soundOn;
+      $("btnMute").textContent = soundOn ? "Sound: ON" : "Sound: OFF";
+      showToast(soundOn ? "Sound enabled 🔊" : "Sound muted 🔇");
+      // small click feedback beep only if turning ON
+      if (soundOn) beep();
     };
 
-    document.getElementById("safe").onclick = () => {
-      msg.textContent = "See? This one was fine.";
-      document.body.style.background = "#0b1220";
-    };
+    // Bonus: long press anywhere triggers confetti (mobile friendly)
+    let pressTimer = null;
+    document.addEventListener("touchstart", () => {
+      pressTimer = setTimeout(() => { confettiBurst(); showToast("Long press = confetti 😏"); }, 600);
+    }, {passive:true});
+    document.addEventListener("touchend", () => clearTimeout(pressTimer), {passive:true});
   </script>
 </body>
 </html>
